@@ -24,4 +24,4 @@ def home():
     return render_template("index.html", image_file=image_file, next_switch=next_switch_timestamp)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)
