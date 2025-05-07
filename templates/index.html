@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>أذكاري</title>
+    <style>
+        body {
+            text-align: center;
+            background-color: #f0f0f0;
+            font-family: sans-serif;
+        }
+        img {
+            max-width: 80%;
+            height: auto;
+        }
+        #countdown {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>أذكاري</h1>
+    <img src="{{ url_for('static', filename=image_file) }}" alt="أذكار">
+    <div id="countdown">العد التنازلي لتغيير الأذكار: ...</div>
+
+    <script>
+        const nextSwitch = {{ next_switch }}
+        const countdownEl = document.getElementById("countdown");
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = nextSwitch - now;
+
+            if (distance < 0) {
+                countdownEl.innerText = "تم التحديث. الرجاء إعادة تحميل الصفحة.";
+                return;
+            }
+
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            countdownEl.innerText = `العد التنازلي لتغيير الأذكار: ${hours} ساعة، ${minutes} دقيقة، ${seconds} ثانية`;
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+    </script>
+</body>
+</html>
