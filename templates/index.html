@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>أذكاري</title>
     <style>
+
         body {
             text-align: center;
             background-color: #f0f0f0;
@@ -23,6 +24,15 @@
     <h1>أذكاري</h1>
     <img src="{{ url_for('static', filename=image_file) }}" alt="أذكار">
     <div id="countdown">العد التنازلي لتغيير الأذكار: ...</div>
+
+    <!-- سورة الكهف Button -->
+    <div style="margin-top: 20px; text-align: center;">
+      <a href="http://b5b5.com/1/?fbclid=PAZXh0bgNhZW0CMTEAAaZJrtxI-OzbsDldb-YKFAQj9G-FPFZLnPS5k22mEiUsIiGpOOq_lLA9KVE_aem_AXN-RQg0eWdmoqJIGfYYB7qzcdXxFOeqQCNhXLHygiINaMwTrjSy9gK_2cliwX-ewPlw0Fu9EUGtIqeiKul8hn5q"
+         target="_blank"
+         style="padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; font-size: 18px;">
+        سورة الكهف
+      </a>
+    </div>
 
     <script>
         const nextSwitch = {{ next_switch }}
