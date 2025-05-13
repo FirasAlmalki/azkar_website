@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>حاسبة الأذكار</title>
+    <style>
+        body {
+            font-family: 'Tahoma', sans-serif;
+            background: linear-gradient(to bottom, #f5f5f5, #d1e7dd);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        p.description {
+            font-size: 16px;
+            background: #e9f5f2;
+            border-left: 4px solid #20c997;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+            color: #117a65;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            background-color: #20c997;
+            border: none;
+            color: white;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #17a589;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .result h3 {
+            margin-top: 0;
+            color: #2e86c1;
+        }
+
+        .custom-query {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body style="font-family: Arial; text-align: center; margin: 30px;">
+
+  <h2>حاسبة الأذكار</h2>
+  <p>
+    قاعد تسوي شغلة ومايمديك تضغط زر المسبحة الالكترونية؟<br>
+    ماعندك مسبحة؟ ما يحتاج!!<br>
+    مع الحاسبة اللي تحول عدد المرات إلى وقت، هو كل اللي تحتاجه!<br>
+    حط مؤقت بدل أن تحسبه بمسبحة.
+  </p>
+  <p>
+    بكل بساطة: اكتب الذكر اللي تبغى تقوله، وكم ثانية ياخذ منك مرة واحدة،<br>
+    والحاسبة تورّيك كم ياخذ وقت بالدقائق والثواني لعدة تكرارات.
+  </p>
+
+  <input type="text" id="zikrText" placeholder="اكتب الذكر هنا" style="padding: 8px; width: 80%; margin-top: 10px;"><br>
+  <input type="number" id="secondsPerZikr" placeholder="كم ثانية لكل مرة؟" style="padding: 8px; width: 80%; margin-top: 10px;"><br><br>
+
+  <button onclick="calculateTimes()" style="padding: 10px 20px;">احسب الوقت</button>
+
+  <div id="results" style="margin-top: 20px; text-align: center;"></div>
+
+  <div style="margin-top: 30px;">
+    <h3>هل تبغى عدد تكرار مخصص؟</h3>
+    <input type="number" id="customCount" placeholder="مثلاً: 200 أو 230" style="padding: 8px; width: 50%;">
+    <button onclick="calculateCustom()" style="padding: 6px 14px;">احسب</button>
+    <div id="customResult" style="margin-top: 10px; font-weight: bold;"></div>
+  </div>
+
+  <script>
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins} دقيقة و ${secs} ثانية`;
+    }
+
+    function calculateTimes() {
+      const seconds = parseFloat(document.getElementById("secondsPerZikr").value);
+      const zikr = document.getElementById("zikrText").value.trim();
+      if (isNaN(seconds) || seconds <= 0 || !zikr) {
+        alert("يرجى إدخال ذكر صحيح وزمن صالح");
+        return;
+      }
+
+      const counts = [10, 20, 30, 100];
+      let html = `<h3>الذكر: "${zikr}"</h3><ul>`;
+      counts.forEach(count => {
+        const total = seconds * count;
+        html += `<li>${count} مرة → ${formatTime(total)}</li>`;
+      });
+      html += "</ul>";
+      document.getElementById("results").innerHTML = html;
+
+      // حفظ مؤقت في الجلسة
+      sessionStorage.setItem("zikr_seconds", seconds);
+      sessionStorage.setItem("zikr_text", zikr);
+    }
+
+    function calculateCustom() {
+      const customCount = parseInt(document.getElementById("customCount").value);
+      const seconds = parseFloat(sessionStorage.getItem("zikr_seconds"));
+      const zikr = sessionStorage.getItem("zikr_text");
+
+      if (!customCount || isNaN(seconds) || !zikr) {
+        alert("يرجى إدخال عدد مخصص بعد إدخال الذكر والمدة أولاً");
+        return;
+      }
+
+      const total = seconds * customCount;
+      document.getElementById("customResult").innerText =
+        `الوقت لـ ${customCount} مرة من "${zikr}" هو: ${formatTime(total)}`;
+    }
+  </script>
+
+</body>
+</html>

@@ -2,7 +2,9 @@ from flask import Flask, render_template
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
-
+@app.route("/zikr-calculator")
+def zikr_calculator():
+    return render_template("zikr_calculator.html")
 @app.route("/")
 def home():
     now = datetime.now()
@@ -22,6 +24,7 @@ def home():
     next_switch_timestamp = int(next_switch.timestamp() * 1000)
 
     return render_template("index.html", image_file=image_file, next_switch=next_switch_timestamp)
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=False)

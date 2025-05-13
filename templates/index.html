@@ -21,7 +21,7 @@
     </style>
 </head>
 <body>
-    <h1>أذكاري</h1>
+    <h1 style="font-size: 36px; color: #2c3e50; margin-top: 20px;">أذكاري</h1>
     <img src="{{ url_for('static', filename=image_file) }}" alt="أذكار">
     <div id="countdown">العد التنازلي لتغيير الأذكار: ...</div>
 
@@ -31,6 +31,18 @@
          target="_blank"
          style="padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; font-size: 18px;">
         سورة الكهف
+      </a>
+    </div>
+
+    <!-- فاصل بين الزرين -->
+    <div style="margin: 15px 0;"></div>
+
+    <!-- حاسبة الأذكار -->
+    <div>
+      <a href="/zikr-calculator" style="text-decoration: none;">
+        <button style="padding: 10px 50px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; font-size: 18px; cursor: pointer;">
+          حاسبة الأذكار
+        </button>
       </a>
     </div>
 
@@ -56,6 +68,8 @@
 
         setInterval(updateCountdown, 1000);
         updateCountdown();
+
+
     </script>
 </body>
 </html>
