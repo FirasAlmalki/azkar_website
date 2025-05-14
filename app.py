@@ -12,7 +12,7 @@ def home():
 
     # تعريف الفترات بدقة:
     # الصباح من 4 فجراً حتى 6 مساءً
-    if 4 <= hour < 18:
+    if 4 <= hour < 16:
         image_file = "morning.jpg"
         # التبديل التالي عند الساعة 18:00
         next_switch = now.replace(hour=16, minute=0, second=0, microsecond=0)
