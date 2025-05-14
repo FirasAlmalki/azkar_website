@@ -12,12 +12,13 @@
         color: #222;
         text-align: center;
         padding: 20px;
+        font-size: 1.2rem;
       }
 
       .header {
         background-color: #d4f2e7;
-        padding: 15px;
-        font-size: 1.5rem;
+        padding: 20px;
+        font-size: 1.6rem;
         font-weight: bold;
         text-align: right;
       }
@@ -26,26 +27,28 @@
         text-decoration: none;
         color: #007d57;
         font-weight: bold;
+        font-size: 1.4rem;
       }
 
-      h1 {
-        font-size: 2rem;
-        margin-bottom: 10px;
+      h1, h2, h3 {
+        font-size: 1.8rem;
+        margin-bottom: 15px;
       }
 
       p {
-        font-size: 1.1rem;
+        font-size: 1.3rem;
         margin-bottom: 20px;
+        line-height: 1.6;
       }
 
       input, button {
-        font-size: 1.1rem;
-        padding: 12px;
-        width: 80%;
-        max-width: 400px;
-        margin: 10px auto;
+        font-size: 1.2rem;
+        padding: 14px;
+        width: 90%;
+        max-width: 450px;
+        margin: 12px auto;
         display: block;
-        border-radius: 8px;
+        border-radius: 10px;
         border: 1px solid #ccc;
       }
 
@@ -58,6 +61,38 @@
 
       button:hover {
         background-color: #27ae60;
+      }
+
+      ul {
+        padding: 0;
+        list-style: none;
+      }
+
+      li {
+        margin-bottom: 10px;
+        font-size: 1.2rem;
+      }
+
+      @media (max-width: 600px) {
+        h1, h2, h3 {
+          font-size: 1.5rem;
+        }
+
+        p, li {
+          font-size: 1.1rem;
+        }
+
+        input, button {
+          font-size: 1.1rem;
+        }
+
+        .header {
+          font-size: 1.4rem;
+        }
+
+        .header a {
+          font-size: 1.2rem;
+        }
       }
     </style>
 </head>
