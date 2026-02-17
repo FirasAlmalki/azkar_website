@@ -2,114 +2,263 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>أذكاري</title>
 <style>
-    body {
-        text-align: center;
-        background-color: #f0f0f0;
-        font-family: sans-serif;
-        transition: background-color 0.3s ease, color 0.3s ease;
-        padding-bottom: 50px;
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
     }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+        transition: all 0.3s ease;
+    }
+
     body.dark {
-        background-color: #1a1a1a;
-        color: #f0f0f0;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    }
+
+    .container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    header {
+        text-align: center;
+        color: white;
+        margin-bottom: 40px;
+        margin-top: 20px;
     }
 
     h1 {
-        font-size: 36px;
-        color: #2c3e50;
-        margin-top: 30px;
+        font-size: 3.5rem;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+        font-weight: bold;
+    }
+
+    .subtitle {
+        font-size: 1.2rem;
+        opacity: 0.9;
+    }
+
+    .azkar-image-container {
+        margin: 30px 0;
+        text-align: center;
     }
 
     img {
-        max-width: 80%;
+        max-width: 85%;
         height: auto;
-        margin: 20px 0;
-        border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        border-radius: 20px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        transition: transform 0.3s ease;
+    }
+
+    img:hover {
+        transform: scale(1.02);
+    }
+
+    .info-section {
+        background: white;
+        padding: 25px;
+        border-radius: 20px;
+        margin: 25px auto;
+        max-width: 500px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        text-align: center;
+    }
+
+    body.dark .info-section {
+        background: #2a2a3e;
+        color: white;
     }
 
     #countdown, #nextPeriod {
-        font-size: 20px;
-        margin: 15px 0;
+        font-size: 1.1rem;
+        margin: 12px 0;
+        color: #667eea;
+        font-weight: 600;
+    }
+
+    body.dark #countdown,
+    body.dark #nextPeriod {
+        color: #a0aec0;
+    }
+
+    .buttons-container {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin: 40px auto;
+        max-width: 500px;
+        align-items: stretch;
     }
 
     button {
-        padding: 12px 25px;
-        margin: 10px 5px;
+        padding: 15px 30px;
         background: linear-gradient(135deg, #4CAF50, #2E8B57);
         color: white;
         border: none;
-        border-radius: 25px;
-        font-size: 18px;
+        border-radius: 15px;
+        font-size: 1.05rem;
         cursor: pointer;
-        transition: transform 0.2s ease, background 0.3s ease;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        font-weight: 600;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
+
+    a {
+        text-decoration: none;
+    }
+
     button:hover {
-        transform: translateY(-2px);
-        background: linear-gradient(135deg, #45a049, #276b45);
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+    }
+
+    button:active {
+        transform: translateY(-1px);
+    }
+
+    /* Different colors for each button */
+    .btn-kahf {
+        background: linear-gradient(135deg, #FF6B6B, #C92A2A) !important;
+    }
+
+    .btn-ramadan {
+        background: linear-gradient(135deg, #667eea, #764ba2) !important;
+    }
+
+    .btn-counter {
+        background: linear-gradient(135deg, #FFA500, #FF8C00) !important;
+    }
+
+    .btn-dark {
+        background: linear-gradient(135deg, #4a5568, #2d3748) !important;
+        padding: 12px 25px;
+        font-size: 0.95rem;
+    }
+
+    .dark-mode-btn {
+        display: flex;
+        justify-content: center;
+        margin-top: 30px;
     }
 
     #randomZikr {
-        font-size: 26px;
-        margin-top: 30px;
+        font-size: 1.8rem;
+        margin-top: 40px;
+        margin-left: auto;
+        margin-right: auto;
         font-weight: bold;
-        background-color: #ffffffcc;
-        color: #2c3e50;
-        padding: 15px 20px;
-        border-radius: 15px;
-        display: inline-block;
-        transition: background-color 0.3s ease, color 0.3s ease;
+        background: white;
+        color: #667eea;
+        padding: 30px;
+        border-radius: 20px;
+        display: block;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        line-height: 1.8;
+        text-align: center;
+        max-width: 500px;
+        width: 90%;
     }
 
     body.dark #randomZikr {
-        background-color: #333333cc;
-        color: #f0f0f0;
+        background: #2a2a3e;
+        color: #a0aec0;
     }
 
     #progressBarContainer {
-        width: 80%;
-        height: 8px;
-        background-color: #ccc;
-        margin: 15px auto;
-        border-radius: 5px;
+        width: 90%;
+        height: 6px;
+        background-color: rgba(255,255,255,0.3);
+        margin: 20px auto;
+        border-radius: 10px;
         overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
     #progressBar {
         width: 0%;
         height: 100%;
-        background-color: #4CAF50;
+        background: linear-gradient(90deg, #4CAF50, #2E8B57);
         transition: width 0.1s linear;
+    }
+
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 2.5rem;
+        }
+
+        .buttons-container {
+            grid-template-columns: 1fr;
+            max-width: 100%;
+        }
+
+        img {
+            max-width: 95%;
+        }
+
+        #randomZikr {
+            font-size: 1.5rem;
+            padding: 20px;
+        }
+
+        button {
+            padding: 12px 20px;
+            font-size: 0.95rem;
+        }
     }
 </style>
 </head>
 <body>
-<h1>أذكاري</h1>
+<div class="container">
+    <header>
+        <h1>🕌 أذكاري</h1>
+        <p class="subtitle">تطبيقك لتتبع الأذكار اليومية</p>
+    </header>
 
-<img id="azkarImage" src="{{ url_for('static', filename=image_file) }}" alt="أذكار">
+    <div class="azkar-image-container">
+        <img id="azkarImage" src="{{ url_for('static', filename=image_file) }}" alt="أذكار">
+    </div>
 
-<div id="countdown">العد التنازلي لتغيير الأذكار: ...</div>
-<div id="nextPeriod">الفترة التالية للأذكار: ...</div>
+    <div class="info-section">
+        <div id="countdown">العد التنازلي لتغيير الأذكار: ...</div>
+        <div id="nextPeriod">الفترة التالية للأذكار: ...</div>
+    </div>
 
-<div style="margin-top: 25px;">
-  <a href="http://b5b5.com/1/" target="_blank">
-    <button>سورة الكهف</button>
-  </a>
-  <a href="/zikr-calculator">
-    <button>حاسبة الأذكار</button>
-  </a>
-</div>
+    <div class="buttons-container">
+        <a href="http://b5b5.com/1/" target="_blank">
+            <button class="btn-kahf">📖 سورة الكهف</button>
+        </a>
+        <a href="/ramadan-reading">
+            <button class="btn-ramadan">📅 اوراد رمضان</button>
+        </a>
+        <a href="/zikr-calculator">
+            <button class="btn-counter">📊 حاسبة الأذكار</button>
+        </a>
+    </div>
 
-<div style="margin-top: 20px;">
-  <button onclick="toggleDarkMode()">تبديل الوضع الليلي</button>
-</div>
+    <div id="randomZikr">...انتظر قليلًا</div>
+    
+    <div id="progressBarContainer">
+        <div id="progressBar"></div>
+    </div>
 
-<div id="randomZikr">...انتظر قليلًا</div>
-<div id="progressBarContainer">
-    <div id="progressBar"></div>
+    <div class="dark-mode-btn">
+        <button class="btn-dark" onclick="toggleDarkMode()">🌙 تبديل الوضع الليلي</button>
+    </div>
 </div>
 
 <script>
@@ -126,7 +275,9 @@ const azkarList = [
     "اللهم صل على محمد",
     "سبحان الله وبحمده",
     "أستغفر الله العظيم",
-    "رضيت بالله ربًا"
+    "رضيت بالله ربًا",
+    "حسبي الله ونعم الوكيل",
+    "لا حول ولا قوة إلا بالله"
 ];
 
 const randomZikrEl = document.getElementById("randomZikr");
@@ -148,15 +299,23 @@ function updateCountdown() {
     const minutes = Math.floor((distance % (1000*60*60)) / (1000*60));
     const seconds = Math.floor((distance % (1000*60)) / 1000);
 
-    countdownEl.innerText = `العد التنازلي لتغيير الأذكار: ${hours} ساعة، ${minutes} دقيقة، ${seconds} ثانية`;
+    countdownEl.innerText = `العد التنازلي لتغيير الأذكار: ${hours}ساعة ${minutes}دقيقة ${seconds}ثانية`;
     const nextDate = new Date(nextSwitch);
-    nextPeriodEl.innerText = `الفترة التالية للأذكار تبدأ عند: ${nextDate.getHours()}:${nextDate.getMinutes()}`;
+    const hours24 = String(nextDate.getHours()).padStart(2, '0');
+    const mins = String(nextDate.getMinutes()).padStart(2, '0');
+    nextPeriodEl.innerText = `الفترة التالية للأذكار تبدأ عند: ${hours24}:${mins}`;
 }
 setInterval(updateCountdown, 1000);
 updateCountdown();
 
 function toggleDarkMode() {
     document.body.classList.toggle('dark');
+    localStorage.setItem('darkMode', document.body.classList.contains('dark'));
+}
+
+// Load dark mode preference
+if(localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark');
 }
 
 function updateRandomZikr() {
@@ -167,7 +326,7 @@ function updateRandomZikr() {
 updateRandomZikr();
 
 setInterval(() => {
-    progress += 0.066; // 0.066% per 10ms => 100% in 15s
+    progress += 0.066;
     if(progress >= 100) {
         updateRandomZikr();
     }

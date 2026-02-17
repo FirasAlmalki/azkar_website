@@ -2,9 +2,15 @@ from flask import Flask, render_template
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
+
+@app.route("/ramadan-reading")
+def ramadan_reading():
+    return render_template("ramadan_reading.html")
+
 @app.route("/zikr-calculator")
 def zikr_calculator():
     return render_template("zikr_calculator.html")
+
 @app.route("/")
 def home():
     now = datetime.now()
