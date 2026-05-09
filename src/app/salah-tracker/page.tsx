@@ -11,6 +11,7 @@ import {
 } from '@/hooks/usePrayerTracker';
 import PrayerRow from '@/components/salah/PrayerRow';
 import StatsBar from '@/components/salah/StatsBar';
+import IslamicDecor from '@/components/IslamicDecor';
 
 function formatDate(d: Date): string {
   return d.toLocaleDateString('ar-SA', { month: 'long', day: 'numeric' });
@@ -40,6 +41,7 @@ export default function SalahTrackerPage() {
   return (
     <main className="ow-page min-h-screen">
       <div className="stars-bg" />
+      <IslamicDecor />
       <div className="relative max-w-2xl mx-auto px-4 py-10 space-y-5">
 
         {/* Header */}

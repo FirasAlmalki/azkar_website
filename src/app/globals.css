@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+/* ── Islamic decor animations ── */
+@keyframes ow-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes ow-spin-r {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(-360deg); }
+}
+
 /* ============================================
    OUTER WILDS THEME — color system (Tailwind v4)
    ============================================ */

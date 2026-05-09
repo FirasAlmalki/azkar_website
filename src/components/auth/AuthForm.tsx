@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { createClientSafe } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
+import LogoMark from '@/components/LogoMark';
 
 type Mode = 'login' | 'register';
 
@@ -139,7 +140,9 @@ export default function AuthForm({ nextPath = '/' }: { nextPath?: string }) {
     <div className="w-full max-w-sm mx-auto">
       <div className="ow-card rounded-3xl p-8 shadow-2xl border border-ow-amber/20">
         <div className="text-center mb-8">
-          <div className="text-5xl mb-3">🌌</div>
+          <div className="flex justify-center mb-3">
+            <LogoMark size={64} />
+          </div>
           <h1 className="text-2xl font-bold text-ow-cream">أذكاري</h1>
           <p className="text-ow-sand/60 text-sm mt-1">
             {mode === 'login' ? 'سجّل دخولك' : 'أنشئ حسابك'}

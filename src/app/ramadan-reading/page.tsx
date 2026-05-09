@@ -5,6 +5,7 @@ import { useRamadanData } from '@/hooks/useRamadanData';
 import { useAuth } from '@/hooks/useAuth';
 import Dashboard from '@/components/ramadan/Dashboard';
 import DaySection from '@/components/ramadan/DaySection';
+import IslamicDecor from '@/components/IslamicDecor';
 
 export default function RamadanReadingPage() {
   const { data, mounted, startProgram, resetProgram, toggleReading, stats } = useRamadanData();
@@ -22,6 +23,7 @@ export default function RamadanReadingPage() {
   return (
     <main className="ow-page min-h-screen">
       <div className="stars-bg" />
+      <IslamicDecor />
       <div className="relative max-w-2xl mx-auto px-4 py-10 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
