@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { createClient } from '@/lib/supabase/client';
+import { createClientSafe } from '@/lib/supabase/client';
 import { RamadanData, RamadanDay } from '@/types';
 import { PRAYERS } from '@/data/azkar';
 
@@ -20,72 +20,73 @@ export function useRamadanData() {
   const [mounted, setMounted] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
 
-  /* ── Bootstrap: get user, then load data ── */
   useEffect(() => {
-    const supabase = createClient();
-
     const load = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      const uid = user?.id ?? null;
-      setUserId(uid);
+      try {
+        const supabase = createClientSafe();
 
-      if (uid) {
-        // Load from Supabase
-        const { data: row } = await supabase
-          .from('ramadan_progress')
-          .select('days, started_at')
-          .eq('user_id', uid)
-          .maybeSingle();
+        if (supabase) {
+          const { data: { user } } = await supabase.auth.getUser();
+          const uid = user?.id ?? null;
+          setUserId(uid);
 
-        if (row) {
-          setData({ started: row.started_at, days: row.days as RamadanDay[] });
-        } else {
-          setData(null);
+          if (uid) {
+            const { data: row } = await supabase
+              .from('ramadan_progress')
+              .select('days, started_at')
+              .eq('user_id', uid)
+              .maybeSingle();
+
+            setData(row ? { started: row.started_at, days: row.days as RamadanDay[] } : null);
+            setMounted(true);
+            return;
+          }
         }
-      } else {
-        // Fallback: localStorage
-        try {
-          const raw = localStorage.getItem(LOCAL_KEY);
-          setData(raw ? JSON.parse(raw) : null);
-        } catch { setData(null); }
-      }
+      } catch {}
+
+      // Fallback: localStorage
+      try {
+        const raw = localStorage.getItem(LOCAL_KEY);
+        setData(raw ? JSON.parse(raw) : null);
+      } catch { setData(null); }
       setMounted(true);
     };
 
     load();
   }, []);
 
-  /* ── Persist whenever data changes ── */
   useEffect(() => {
     if (!mounted || !data) return;
 
     if (userId) {
-      const supabase = createClient();
-      supabase
-        .from('ramadan_progress')
-        .upsert(
-          { user_id: userId, days: data.days, started_at: data.started, updated_at: new Date().toISOString() },
-          { onConflict: 'user_id' }
-        )
-        .then(() => {});
+      try {
+        const supabase = createClientSafe();
+        if (supabase) {
+          supabase
+            .from('ramadan_progress')
+            .upsert(
+              { user_id: userId, days: data.days, started_at: data.started, updated_at: new Date().toISOString() },
+              { onConflict: 'user_id' }
+            )
+            .then(() => {});
+        }
+      } catch {}
     } else {
       try { localStorage.setItem(LOCAL_KEY, JSON.stringify(data)); } catch {}
     }
   }, [data, mounted, userId]);
 
-  /* ── Actions ── */
-  const startProgram = useCallback(() => {
-    const fresh = buildFreshData();
-    setData(fresh);
-  }, []);
+  const startProgram = useCallback(() => setData(buildFreshData()), []);
 
   const resetProgram = useCallback(async () => {
-    if (userId) {
-      const supabase = createClient();
-      await supabase.from('ramadan_progress').delete().eq('user_id', userId);
-    } else {
-      localStorage.removeItem(LOCAL_KEY);
-    }
+    try {
+      if (userId) {
+        const supabase = createClientSafe();
+        if (supabase) await supabase.from('ramadan_progress').delete().eq('user_id', userId);
+      } else {
+        localStorage.removeItem(LOCAL_KEY);
+      }
+    } catch {}
     setData(null);
   }, [userId]);
 
