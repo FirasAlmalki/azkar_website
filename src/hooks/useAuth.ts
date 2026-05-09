@@ -19,7 +19,6 @@ export function useAuth() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => setUser(session?.user ?? null)
     );
-
     return () => subscription.unsubscribe();
   }, []);
 
@@ -31,5 +30,8 @@ export function useAuth() {
     window.location.href = '/login';
   }, []);
 
-  return { user, loading, signOut };
+  // Username stored in user_metadata during signUp
+  const username: string | null = user?.user_metadata?.username ?? null;
+
+  return { user, loading, signOut, username };
 }

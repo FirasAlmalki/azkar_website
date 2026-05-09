@@ -8,7 +8,7 @@ import DaySection from '@/components/ramadan/DaySection';
 
 export default function RamadanReadingPage() {
   const { data, mounted, startProgram, resetProgram, toggleReading, stats } = useRamadanData();
-  const { user, signOut } = useAuth();
+  const { user, signOut, username } = useAuth();
 
   if (!mounted) {
     return (
@@ -42,9 +42,9 @@ export default function RamadanReadingPage() {
         </div>
 
         {/* User info */}
-        {user && (
+        {username && (
           <p className="text-ow-sand/50 text-xs text-center">
-            مسجّل كـ {user.email}
+            👤 {username}
           </p>
         )}
 

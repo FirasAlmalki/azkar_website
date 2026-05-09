@@ -17,7 +17,7 @@ function formatDate(d: Date): string {
 }
 
 export default function SalahTrackerPage() {
-  const { user, signOut } = useAuth();
+  const { signOut, username } = useAuth();
   const {
     mounted, firstFriday, weekDays, logs, stats,
     canGoBack, canGoForward, goBack, goForward,
@@ -52,7 +52,7 @@ export default function SalahTrackerPage() {
                 إعادة
               </button>
             )}
-            {user && (
+            {username && (
               <button onClick={signOut} className="text-ow-sand/40 hover:text-ow-sand text-xs transition-colors">
                 خروج
               </button>
