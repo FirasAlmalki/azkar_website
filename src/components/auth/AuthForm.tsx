@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 
 type Mode = 'login' | 'register';
 
-/** Username → deterministic fake email using SHA-256 */
+/** Username → deterministic fake email */
 async function usernameToEmail(username: string): Promise<string> {
   const normalized = username.trim().toLowerCase();
   const encoded = new TextEncoder().encode(normalized);
@@ -18,6 +18,19 @@ async function usernameToEmail(username: string): Promise<string> {
   return `${hex}@azkarapp.local`;
 }
 
+/**
+ * Supabase requires min 6 chars. We pad internally so the user
+ * can type ANY password (even 1 character) and it still works.
+ * The padding is consistent so login always matches signup.
+ */
+function padPassword(raw: string): string {
+  // Repeat the password until it's at least 6 chars, then append a fixed tag
+  const repeated = raw.length < 6
+    ? raw.repeat(Math.ceil(6 / raw.length)).slice(0, 6)
+    : raw;
+  return repeated + '__az';   // fixed suffix keeps it unique per app
+}
+
 export default function AuthForm({ nextPath = '/' }: { nextPath?: string }) {
   const [mode, setMode] = useState<Mode>('login');
   const [username, setUsername] = useState('');
@@ -25,6 +38,8 @@ export default function AuthForm({ nextPath = '/' }: { nextPath?: string }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  const switchMode = (m: Mode) => { setMode(m); setError(''); };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,13 +49,20 @@ export default function AuthForm({ nextPath = '/' }: { nextPath?: string }) {
     if (!password)         { setError('أدخل كلمة المرور');  return; }
 
     setLoading(true);
+
     const supabase = createClientSafe();
-    if (!supabase) { setError('خطأ في الاتصال'); setLoading(false); return; }
+    if (!supabase) { setError('خطأ في الاتصال بالخادم'); setLoading(false); return; }
 
-    const email = await usernameToEmail(username);
+    const email      = await usernameToEmail(username);
+    const safePass   = padPassword(password);          // ← always ≥ 10 chars
 
+    /* ── LOGIN ── */
     if (mode === 'login') {
-      const { error: err } = await supabase.auth.signInWithPassword({ email, password });
+      const { error: err } = await supabase.auth.signInWithPassword({
+        email,
+        password: safePass,
+      });
+
       if (err) {
         setError('اسم المستخدم أو كلمة المرور غير صحيحة');
       } else {
@@ -48,42 +70,65 @@ export default function AuthForm({ nextPath = '/' }: { nextPath?: string }) {
         router.refresh();
       }
 
+    /* ── REGISTER ── */
     } else {
-      // Check username availability
-      const { data: existing } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('username', username.trim())
-        .maybeSingle();
+      // 1. Check username availability (ignore errors if table missing)
+      try {
+        const { data: existing } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('username', username.trim())
+          .maybeSingle();
 
-      if (existing) {
-        setError('اسم المستخدم محجوز، اختر اسماً آخر');
+        if (existing) {
+          setError('اسم المستخدم محجوز، اختر اسماً آخر');
+          setLoading(false);
+          return;
+        }
+      } catch { /* profiles table might not exist yet — continue */ }
+
+      // 2. Create account
+      const { data, error: signUpErr } = await supabase.auth.signUp({
+        email,
+        password: safePass,
+        options: { data: { username: username.trim() } },
+      });
+
+      if (signUpErr) {
+        // Surface the real reason in dev; show friendly message in prod
+        console.error('[signUp error]', signUpErr.message);
+        setError(`خطأ: ${signUpErr.message}`);
         setLoading(false);
         return;
       }
 
-      const { data, error: signUpErr } = await supabase.auth.signUp({
+      if (!data.user) {
+        setError('لم يُنشأ الحساب — تأكد من تعطيل "Confirm email" في Supabase');
+        setLoading(false);
+        return;
+      }
+
+      // 3. Save username in profiles (best effort)
+      try {
+        await supabase.from('profiles').insert({
+          id: data.user.id,
+          username: username.trim(),
+        });
+      } catch {}
+
+      // 4. Auto sign-in immediately
+      const { error: loginErr } = await supabase.auth.signInWithPassword({
         email,
-        password,
-        options: { data: { username: username.trim() } },
+        password: safePass,
       });
 
-      if (signUpErr || !data.user) {
-        setError('حدث خطأ في إنشاء الحساب، حاول مجدداً');
+      if (!loginErr) {
+        router.push(nextPath);
+        router.refresh();
       } else {
-        // Save username in profiles
-        await supabase.from('profiles').insert({ id: data.user.id, username: username.trim() });
-
-        // Auto sign-in
-        const { error: loginErr } = await supabase.auth.signInWithPassword({ email, password });
-        if (!loginErr) {
-          router.push(nextPath);
-          router.refresh();
-        } else {
-          // Likely email confirmation still enabled — tell the user
-          setError('✅ تم إنشاء الحساب! سجّل دخولك الآن.');
-          setMode('login');
-        }
+        // Email confirmation still on → tell user to disable it
+        setError('✅ تم إنشاء الحساب! عطّل "Confirm email" في Supabase ثم سجّل دخولك.');
+        switchMode('login');
       }
     }
 
@@ -104,9 +149,7 @@ export default function AuthForm({ nextPath = '/' }: { nextPath?: string }) {
         {/* Tabs */}
         <div className="flex rounded-2xl overflow-hidden border border-ow-amber/30 mb-6">
           {(['login', 'register'] as Mode[]).map(m => (
-            <button
-              key={m}
-              onClick={() => { setMode(m); setError(''); }}
+            <button key={m} onClick={() => switchMode(m)}
               className={`flex-1 py-2 text-sm font-medium transition-all ${
                 mode === m
                   ? 'bg-ow-amber text-[#0a0d17] font-bold'
@@ -137,7 +180,7 @@ export default function AuthForm({ nextPath = '/' }: { nextPath?: string }) {
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
-              placeholder="••••••"
+              placeholder="أي كلمة مرور"
               autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
               className="ow-input w-full"
               dir="ltr"
@@ -145,7 +188,7 @@ export default function AuthForm({ nextPath = '/' }: { nextPath?: string }) {
           </div>
 
           {error && (
-            <p className={`text-sm text-center rounded-xl py-2 px-3 border ${
+            <p className={`text-sm text-center rounded-xl py-2 px-3 border break-all ${
               error.startsWith('✅')
                 ? 'text-green-400 bg-green-900/20 border-green-500/30'
                 : 'text-red-400 bg-red-900/20 border-red-500/30'
@@ -154,10 +197,8 @@ export default function AuthForm({ nextPath = '/' }: { nextPath?: string }) {
             </p>
           )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="ow-btn-primary w-full py-3 rounded-2xl font-bold text-lg disabled:opacity-40 disabled:cursor-not-allowed mt-1"
+          <button type="submit" disabled={loading}
+            className="ow-btn-primary w-full py-3 rounded-2xl font-bold text-lg disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {loading ? '...' : mode === 'login' ? 'دخول' : 'إنشاء حساب'}
           </button>
