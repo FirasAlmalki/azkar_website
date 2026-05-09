@@ -15,7 +15,7 @@ const labels: Record<TimePeriod, string> = {
 
 export default function AzkarImage({ period, imageSrc }: Props) {
   return (
-    <div className="w-full rounded-2xl overflow-hidden shadow-2xl">
+    <div className="w-full rounded-2xl overflow-hidden shadow-2xl border border-ow-amber/20">
       <Image
         src={imageSrc}
         alt={labels[period]}
@@ -24,10 +24,8 @@ export default function AzkarImage({ period, imageSrc }: Props) {
         className="w-full h-auto"
         priority
       />
-      <div className="bg-black/40 px-4 py-3">
-        <h1 className="text-white text-xl md:text-2xl font-bold text-center">
-          {labels[period]}
-        </h1>
+      <div className="bg-black/60 px-4 py-3 border-t border-ow-amber/20">
+        <h2 className="text-ow-amber text-lg font-bold text-center">{labels[period]}</h2>
       </div>
     </div>
   );

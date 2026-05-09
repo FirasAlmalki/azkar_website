@@ -15,11 +15,10 @@ const nextLabel: Record<TimePeriod, string> = {
 
 export default function CountdownTimer({ nextSwitchMs, period }: Props) {
   const countdown = useCountdown(nextSwitchMs);
-
   return (
-    <div className="text-center bg-white/10 dark:bg-black/20 backdrop-blur-sm rounded-2xl px-6 py-4 border border-white/20">
-      <p className="text-white/80 text-sm mb-1">الوقت المتبقي لـ {nextLabel[period]}</p>
-      <p className="text-white text-3xl font-mono font-bold tracking-widest">{countdown}</p>
+    <div className="ow-card border border-ow-amber/20 rounded-2xl px-6 py-4 text-center">
+      <p className="text-ow-sand/60 text-xs mb-1">الوقت المتبقي لـ {nextLabel[period]}</p>
+      <p className="text-ow-amber text-3xl font-mono font-bold tracking-widest">{countdown}</p>
     </div>
   );
 }

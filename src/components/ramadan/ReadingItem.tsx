@@ -16,15 +16,11 @@ export default function ReadingItem({ reading, dayIndex, readingIndex, onToggle 
         type="checkbox"
         checked={reading.completed}
         onChange={() => onToggle(dayIndex, readingIndex)}
-        className="w-5 h-5 rounded accent-green-500 cursor-pointer"
+        className="w-5 h-5 rounded cursor-pointer accent-amber-500"
       />
-      <span
-        className={`flex-1 text-sm transition-all ${
-          reading.completed
-            ? 'line-through text-white/40'
-            : 'text-white group-hover:text-white/80'
-        }`}
-      >
+      <span className={`flex-1 text-sm transition-all ${
+        reading.completed ? 'line-through text-ow-sand/30' : 'text-ow-sand group-hover:text-ow-cream'
+      }`}>
         {reading.emoji} {reading.name}
       </span>
     </label>
