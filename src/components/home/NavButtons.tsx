@@ -3,10 +3,9 @@
 import Link from 'next/link';
 
 const buttons = [
-  { href: 'https://b5b5.com/1/', label: '📖 سورة الكهف', external: true },
-  { href: '/ramadan-reading',   label: '🌙 متابعة الختمة', external: false },
-  { href: '/salah-tracker',     label: '🕌 تتبع الصلاة',   external: false },
-  { href: '/zikr-calculator',   label: '📿 حاسبة الذكر',   external: false },
+  { href: '/tracker',           label: '🕌 المتابعة اليومية', external: false, full: true },
+  { href: 'https://b5b5.com/1/', label: '📖 سورة الكهف', external: true, full: false },
+  { href: '/zikr-calculator',   label: '📿 حاسبة الذكر',   external: false, full: false },
 ];
 
 export default function NavButtons() {
@@ -19,12 +18,12 @@ export default function NavButtons() {
             href={btn.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="ow-nav-btn"
+            className={`ow-nav-btn ${btn.full ? 'col-span-2' : ''}`}
           >
             {btn.label}
           </a>
         ) : (
-          <Link key={btn.href} href={btn.href} className="ow-nav-btn">
+          <Link key={btn.href} href={btn.href} className={`ow-nav-btn ${btn.full ? 'col-span-2' : ''}`}>
             {btn.label}
           </Link>
         )

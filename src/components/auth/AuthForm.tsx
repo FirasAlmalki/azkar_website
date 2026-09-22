@@ -16,7 +16,7 @@ async function usernameToEmail(username: string): Promise<string> {
     .map(b => b.toString(16).padStart(2, '0'))
     .join('')
     .slice(0, 24);
-  return `${hex}@azkarapp.local`;
+  return `${hex}@azkarapp.com`;
 }
 
 /**
@@ -129,7 +129,7 @@ export default function AuthForm({ nextPath = '/' }: { nextPath?: string }) {
       } else {
         // Email confirmation still on → tell user to disable it
         setError('✅ تم إنشاء الحساب! عطّل "Confirm email" في Supabase ثم سجّل دخولك.');
-        switchMode('login');
+        setMode('login');
       }
     }
 

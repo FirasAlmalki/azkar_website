@@ -11,11 +11,3 @@ export const AZKAR_LIST: string[] = [
   'حسبي الله ونعم الوكيل',
   'لا حول ولا قوة إلا بالله',
 ];
-
-export const PRAYERS = [
-  { name: 'ورد الفجر', emoji: '🌅' },
-  { name: 'ورد الظهر', emoji: '☀️' },
-  { name: 'ورد العصر', emoji: '🕐' },
-  { name: 'ورد المغرب', emoji: '🌆' },
-  { name: 'ورد العشاء', emoji: '🌙' },
-] as const;

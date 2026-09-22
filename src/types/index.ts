@@ -6,22 +6,6 @@ export interface TimeOfDayState {
   nextSwitchMs: number;
 }
 
-export interface RamadanReading {
-  name: string;
-  emoji: string;
-  completed: boolean;
-}
-
-export interface RamadanDay {
-  day: number;
-  readings: RamadanReading[];
-}
-
-export interface RamadanData {
-  started: string;
-  days: RamadanDay[];
-}
-
 export interface ZikrResult {
   count: number;
   label: string;
