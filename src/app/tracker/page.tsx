@@ -43,7 +43,7 @@ export default function TrackerPage() {
             <Timeline items={items} completed={completed} onToggle={toggleItem} />
           </div>
           <div>
-            <FriendsPanel myScore={score} />
+            <FriendsPanel myScore={score} items={items} />
           </div>
         </div>
       </div>

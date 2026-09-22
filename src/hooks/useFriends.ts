@@ -8,6 +8,7 @@ export interface FriendScore {
   id: string;
   username: string;
   score: number;
+  completedItemIds: number[];
 }
 
 export function useFriends(myScore: number) {
@@ -35,18 +36,27 @@ export function useFriends(myScore: number) {
       const friendIds = (friendRows ?? []).map(r => r.friend_id as string);
       if (friendIds.length === 0) { setFriends([]); return; }
 
-      const [{ data: profiles }, { data: scores }] = await Promise.all([
+      const [{ data: profiles }, { data: scores }, { data: logs }] = await Promise.all([
         supabase.from('profiles').select('id, username').in('id', friendIds),
         supabase.from('daily_scores').select('user_id, score').eq('log_date', todayStr()).in('user_id', friendIds),
+        supabase.from('tracker_logs').select('user_id, item_id').eq('log_date', todayStr()).eq('completed', true).in('user_id', friendIds),
       ]);
 
       const scoreMap = new Map<string, number>();
       (scores ?? []).forEach(s => scoreMap.set(s.user_id, Number(s.score) || 0));
 
+      const doneMap = new Map<string, number[]>();
+      (logs ?? []).forEach(l => {
+        const arr = doneMap.get(l.user_id) ?? [];
+        arr.push(l.item_id);
+        doneMap.set(l.user_id, arr);
+      });
+
       const list: FriendScore[] = (profiles ?? []).map(p => ({
         id: p.id,
         username: p.username,
         score: scoreMap.get(p.id) ?? 0,
+        completedItemIds: doneMap.get(p.id) ?? [],
       }));
 
       setFriends(list);
@@ -105,7 +115,7 @@ export function useFriends(myScore: number) {
     } catch {}
   }, [userId]);
 
-  const leaderboard = [{ id: userId ?? 'me', username: myUsername ?? 'أنا', score: myScore, isMe: true }, ...friends.map(f => ({ ...f, isMe: false }))]
+  const leaderboard = [{ id: userId ?? 'me', username: myUsername ?? 'أنا', score: myScore, completedItemIds: [] as number[], isMe: true }, ...friends.map(f => ({ ...f, isMe: false }))]
     .sort((a, b) => b.score - a.score);
 
   return { leaderboard, addFriend, removeFriend, loading, error, setError };

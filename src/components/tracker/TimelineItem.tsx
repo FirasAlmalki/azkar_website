@@ -31,7 +31,7 @@ export default function TimelineItem({ item, done, onToggle }: Props) {
             done
               ? 'bg-green-500 border-green-400 text-[#0a0d17]'
               : criticalRing
-              ? 'border-red-400 text-red-400'
+              ? 'border-red-400 text-transparent'
               : 'border-ow-sand/30 text-transparent'
           }`}
         >
