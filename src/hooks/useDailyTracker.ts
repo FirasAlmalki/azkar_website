@@ -21,13 +21,23 @@ export function todayStr(): string {
   return new Date(d.getTime() - tz).toISOString().split('T')[0];
 }
 
+function addDaysStr(dateStr: string, n: number): string {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const dt = new Date(y, m - 1, d);
+  dt.setDate(dt.getDate() + n);
+  const yyyy = dt.getFullYear();
+  const mm = String(dt.getMonth() + 1).padStart(2, '0');
+  const dd = String(dt.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
 export function useDailyTracker() {
   const [userId, setUserId] = useState<string | null>(null);
   const [items, setItems] = useState<TrackerItem[]>([]);
   const [completed, setCompleted] = useState<Set<number>>(new Set());
   const [mounted, setMounted] = useState(false);
-
-  const date = todayStr();
+  const [selectedDate, setSelectedDate] = useState<string>(todayStr());
+  const [logsLoading, setLogsLoading] = useState(false);
 
   useEffect(() => {
     const init = async () => {
@@ -46,22 +56,36 @@ export function useDailyTracker() {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) { setMounted(true); return; }
         setUserId(user.id);
-
-        const { data: logs } = await supabase
-          .from('tracker_logs')
-          .select('item_id, completed')
-          .eq('user_id', user.id)
-          .eq('log_date', date);
-
-        const done = new Set<number>();
-        (logs ?? []).forEach(l => { if (l.completed) done.add(l.item_id); });
-        setCompleted(done);
       } catch {}
       setMounted(true);
     };
     init();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (!userId) return;
+    let cancelled = false;
+    const loadLogs = async () => {
+      setLogsLoading(true);
+      try {
+        const supabase = createClientSafe();
+        if (!supabase) return;
+        const { data: logs } = await supabase
+          .from('tracker_logs')
+          .select('item_id, completed')
+          .eq('user_id', userId)
+          .eq('log_date', selectedDate);
+
+        if (cancelled) return;
+        const done = new Set<number>();
+        (logs ?? []).forEach(l => { if (l.completed) done.add(l.item_id); });
+        setCompleted(done);
+      } catch {}
+      if (!cancelled) setLogsLoading(false);
+    };
+    loadLogs();
+    return () => { cancelled = true; };
+  }, [userId, selectedDate]);
 
   const toggleItem = useCallback(async (itemId: number) => {
     if (!userId) return;
@@ -77,11 +101,11 @@ export function useDailyTracker() {
       const supabase = createClientSafe();
       if (!supabase) return;
       await supabase.from('tracker_logs').upsert(
-        { user_id: userId, item_id: itemId, log_date: date, completed: willComplete, updated_at: new Date().toISOString() },
+        { user_id: userId, item_id: itemId, log_date: selectedDate, completed: willComplete, updated_at: new Date().toISOString() },
         { onConflict: 'user_id,item_id,log_date' }
       );
     } catch {}
-  }, [userId, completed, date]);
+  }, [userId, completed, selectedDate]);
 
   const score = useMemo(() => {
     return Math.round(
@@ -89,5 +113,16 @@ export function useDailyTracker() {
     ) / 10;
   }, [items, completed]);
 
-  return { mounted, userId, items, completed, toggleItem, score };
+  const isToday = selectedDate === todayStr();
+  const goToPrevDay = useCallback(() => setSelectedDate(d => addDaysStr(d, -1)), []);
+  const goToNextDay = useCallback(() => setSelectedDate(d => {
+    const next = addDaysStr(d, 1);
+    return next > todayStr() ? d : next;
+  }), []);
+  const goToToday = useCallback(() => setSelectedDate(todayStr()), []);
+
+  return {
+    mounted, userId, items, completed, toggleItem, score,
+    selectedDate, isToday, goToPrevDay, goToNextDay, goToToday, logsLoading,
+  };
 }
